@@ -32,3 +32,12 @@ test("attack invalid", () => {
     board.recieveAttack(32)
     expect(board.recieveAttack(32)).toBe("invalid")
 })
+
+test("winner", () => {
+    let board = myObj.gameBoard()
+    board.placeShip(26, 3)
+    board.recieveAttack(26)
+    board.recieveAttack(27)
+    board.recieveAttack(28)
+    expect(board.isWinner()).toBe(true)
+})

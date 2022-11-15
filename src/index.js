@@ -1,6 +1,6 @@
-import "./style.css"
+//import "./style.css"
 
-export const ship = (lengthShip) => {
+const ship = (lengthShip) => {
     let length = lengthShip
     let hits = 0
     let hit = () => {
@@ -11,7 +11,7 @@ export const ship = (lengthShip) => {
     return {isSunk, hit}
 }
 
-export const gameBoard = () => {
+const gameBoard = () => {
 
     let gameBoardArray = []
     const tile = (coordinates) => {
@@ -28,30 +28,6 @@ export const gameBoard = () => {
 
     let placeShip = (coordinates, lengthShip) => {
         let check = coordinates + lengthShip
-        let valid = false
-
-        //check if ship fits on vertical line
-        let temp1 = 0
-        let temp2 = 10
-        for(let i = 0; i < 10; i++) {
-            if(temp1 < check && temp2 > check && temp1 < coordinates && temp2 > coordinates) {
-                valid = true
-            }
-            temp1 = temp1 + 10
-            temp2 = temp2 + 10
-        }
-
-        //checks if ship is not on top of other ship 
-        for (let i = coordinates; i < check; i++) {
-            if(gameBoardArray[i].hasShip) {
-                valid = false
-            }
-        }
-
-        if (!valid) {
-            return "invalid"
-        }
-
         //create ship and put in onto board
         let shipType = ship(lengthShip)
         for (let i = coordinates; i < check; i++) {
@@ -116,6 +92,111 @@ function gameController () {
 
     const user = Player("human", computerGameBoard)
     const computer = Player("computer", userGameBoard)
+
+    const userDOMGameBoard = document.querySelector(".gameBoard1")
+    const computerDOMGameBoard = document.querySelector(".gameBoard2")
+
+    let userGameboardTiles = []
+    let computerGameboardTiles = []
+
+    function createGameBoard (board, boardArray) {
+        for (let i = 0; i < 100; i++) {
+            let tile = document.createElement("tile")
+            tile.classList.add("tile")
+            board.appendChild(tile)
+
+            //push tile to array so we can find
+            //the index and add listeners later on
+            boardArray.push(tile)
+        }
+    }
+    createGameBoard(userDOMGameBoard, userGameboardTiles)
+    createGameBoard(computerDOMGameBoard, computerGameboardTiles)
+    let shipsPlaced = 0
+    let length = 5
+    let doubleThreeCheck = false
+    function placeShip (lengthShip) {
+        console.log(lengthShip)
+        let hoveredTile;
+        let userInputGiven = false
+
+        console.log("ships: " + shipsPlaced)
+        userGameboardTiles.forEach(item => {
+            item.addEventListener("mouseover", (e) => {
+                userGameboardTiles.forEach(element => {
+                    element.classList.remove("hovered")
+                });
+                //e.target.classList.add("hovered")
+                hoveredTile = userGameboardTiles.indexOf(e.target)
+                checkValidity(hoveredTile)
+            })
+            item.addEventListener("click", (e) => {
+                console.log("hello")
+                let clickedTile = userGameboardTiles.indexOf(e.target)
+                if(checkValidity(clickedTile)) {
+                    for(let i = clickedTile; i < (clickedTile + length); i++) {
+                        userGameboardTiles[i].classList.add("selected")
+                        
+                    }
+                    userGameBoard.placeShip(clickedTile, length)
+                    shipsPlaced++
+                    if (length == 3 && doubleThreeCheck == false) {
+                        doubleThreeCheck = true
+                    } else {
+                        length--
+                    }
+                    if (length < 2) {
+                        userGameboardTiles.forEach(element => {
+                            element.replaceWith(element.cloneNode())
+                        })
+                    }
+                }
+            })   
+        });
+        function checkValidity (hoveredTile) {
+            let coordinates = hoveredTile
+            let check = coordinates + length
+            let valid = false
+
+            //check if ship fits on vertical line
+            let temp1 = 0
+            let temp2 = 10
+            for(let i = 0; i < 10; i++) {
+                if(temp1 < check && temp2 >= check && temp1 <= coordinates && temp2 > coordinates) {
+                    valid = true
+                }
+                temp1 = temp1 + 10
+                temp2 = temp2 + 10
+            }
+
+            //checks if ship is not on top of other ship 
+            for (let i = coordinates; i < check; i++) {
+                if (i >= 100) {
+                    valid = false
+                } else if(userGameBoard.gameBoardArray[i].hasShip) {
+                    valid = false
+                }
+            }
+            console.log(valid)
+            if (!valid) {
+                return false
+            }
+            userGameboardTiles.forEach(item => {
+                item.classList.remove("hovered")
+            })
+            for (let i = coordinates; i < check; i++) {
+                userGameboardTiles[i].classList.add("hovered")
+            }
+            return true
+
+        }
+
+    }
+    placeShip(5)
+    let placeShip2 = () => placeShip(4)
+    let placeShip3_4 = () => placeShip(3)
+    let placeShip5 = () => placeShip(2)
 }
+gameController()
 
 
