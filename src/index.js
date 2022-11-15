@@ -83,7 +83,39 @@ export const gameBoard = () => {
         return "missed"
     }
 
-    return {placeShip, recieveAttack}
+    return {placeShip, recieveAttack, isWinner, gameBoardArray}
+}
+
+const Player = (type, opponentGameBoard) => {
+    let playerType = type
+    let gameBoard = opponentGameBoard
+
+    const turn = () => {
+
+        let move = null
+        if (playerType == "human") {
+            move = prompt("coordinates")
+        } else if (playerType == "computer") {
+            move = Math.floor(Math.random() * 101)
+            while(gameBoard.gameBoardArray[move].hasHit) {
+                move = Math.floor(Math.random() * 101)
+            }
+        }
+        return move    
+    }
+    return {turn}
+}
+
+const DOMController = (() => {
+
+})()
+
+function gameController () {
+    const userGameBoard = gameBoard()
+    const computerGameBoard = gameBoard()
+
+    const user = Player("human", computerGameBoard)
+    const computer = Player("computer", userGameBoard)
 }
 
 
