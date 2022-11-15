@@ -112,13 +112,42 @@ function gameController () {
     }
     createGameBoard(userDOMGameBoard, userGameboardTiles)
     createGameBoard(computerDOMGameBoard, computerGameboardTiles)
+
+    function placeComputerShips() {
+        let shipLength = 5 
+        let doubleThreeChecker = false
+        let location;
+        for (let i = 0; i < 5; i++) {
+            let doubleChecker = false
+            while(!doubleChecker) {
+                let row = Math.floor(Math.random() * 10)
+                let column = Math.floor(Math.random() * (10 - (shipLength - 1)))
+                location = parseInt(`${row}${column}`)
+                doubleChecker = true
+                for(let j = location; j < (location + shipLength); j++) {
+                    if(computerGameBoard.gameBoardArray[j].hasShip) {
+                        doubleChecker = false
+                    }
+                }
+                
+            }
+            console.log(location)
+            computerGameBoard.placeShip(location, shipLength)
+            if(!shipLength == 3 && doubleChecker == false) {
+                doubleThreeChecker = true
+            } else {
+                shipLength--
+            }
+
+            
+        }
+        console.log(computerGameBoard.gameBoardArray)
+    }
     let shipsPlaced = 0
     let length = 5
     let doubleThreeCheck = false
-    function placeShip (lengthShip) {
-        console.log(lengthShip)
+    function placeShip () {
         let hoveredTile;
-        let userInputGiven = false
 
         console.log("ships: " + shipsPlaced)
         userGameboardTiles.forEach(item => {
@@ -192,10 +221,9 @@ function gameController () {
         }
 
     }
+    placeComputerShips()
     placeShip(5)
-    let placeShip2 = () => placeShip(4)
-    let placeShip3_4 = () => placeShip(3)
-    let placeShip5 = () => placeShip(2)
+
 }
 gameController()
 

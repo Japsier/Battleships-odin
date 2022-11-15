@@ -31,8 +31,11 @@ main {
 .tile {
     border: 1px solid black;  
 }
-.tile.hovered{
+.tile.hovered {
     background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ); 
+}
+.tile.hovered:hover {
+    cursor: pointer;
 }
 .tile.selected {
     background: linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) );
