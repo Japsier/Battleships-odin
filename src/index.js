@@ -63,21 +63,49 @@ const gameBoard = () => {
 }
 
 const Player = (type, opponentGameBoard) => {
-    let playerType = type
     let gameBoard = opponentGameBoard
 
-    const turn = () => {
+    const turn = (compBoard, userBoard, computerPlayBoard, userPlayBoard) => {
 
-        let move = null
-        if (playerType == "human") {
-            move = prompt("coordinates")
-        } else if (playerType == "computer") {
-            move = Math.floor(Math.random() * 101)
-            while(gameBoard.gameBoardArray[move].hasHit) {
-                move = Math.floor(Math.random() * 101)
+        compBoard.forEach(item => {
+            item.addEventListener("click", (e) => {
+                
+                if (!e.target.classList.contains("shot")) {
+
+                    e.target.classList.add("shot")
+                    let location = compBoard.indexOf(e.target)
+                    let arrLocation = computerPlayBoard.gameBoardArray[location]
+                    arrLocation.hasHit = true
+                    if (arrLocation.shipID != null) {
+                        arrLocation.shipID.hit()
+                    }
+                    if(computerPlayBoard.isWinner()) {
+                        console.log("user won")
+                    }
+                    computerTurn ()
+                }
+            })
+        })
+        let computerTurn = () => {
+            console.log("computer move")
+            move = Math.floor(Math.random() * 100)
+            while(userPlayBoard.gameBoardArray[move].hasHit) {
+                move = Math.floor(Math.random() * 100)
             }
+            console.log(document.querySelector(".gameBoard1").childNodes)
+            let tiles = document.querySelector(".gameBoard1").childNodes
+            tiles[move].classList.add("shot")
+            arrLocation = userPlayBoard.gameBoardArray[move]
+            arrLocation.hasHit = true
+            if  (arrLocation.shipID != null) {
+                arrLocation.shipID.hit()
+            }
+            if(userPlayBoard.isWinner()) {
+                console.log("computer wins")
+            }
+            
         }
-        return move    
+          
     }
     return {turn}
 }
@@ -87,8 +115,12 @@ const DOMController = (() => {
 })()
 
 function gameController () {
+
     const userGameBoard = gameBoard()
     const computerGameBoard = gameBoard()
+
+    let userGameboardTiles = []
+    let computerGameboardTiles = []
 
     const user = Player("human", computerGameBoard)
     const computer = Player("computer", userGameBoard)
@@ -96,8 +128,6 @@ function gameController () {
     const userDOMGameBoard = document.querySelector(".gameBoard1")
     const computerDOMGameBoard = document.querySelector(".gameBoard2")
 
-    let userGameboardTiles = []
-    let computerGameboardTiles = []
 
     function createGameBoard (board, boardArray) {
         for (let i = 0; i < 100; i++) {
@@ -109,9 +139,10 @@ function gameController () {
             //the index and add listeners later on
             boardArray.push(tile)
         }
+        return boardArray
     }
-    createGameBoard(userDOMGameBoard, userGameboardTiles)
-    createGameBoard(computerDOMGameBoard, computerGameboardTiles)
+    userGameboardTiles = createGameBoard(userDOMGameBoard, userGameboardTiles)
+    computerGameboardTiles = createGameBoard(computerDOMGameBoard, computerGameboardTiles)
 
     function placeComputerShips() {
         let shipLength = 5 
@@ -178,6 +209,7 @@ function gameController () {
                         userGameboardTiles.forEach(element => {
                             element.replaceWith(element.cloneNode())
                         })
+                        playGame()
                     }
                 }
             })   
@@ -219,8 +251,22 @@ function gameController () {
             return true
 
         }
+        const playGame = () => {
+            new Promise(function(resolve, reject){
+                user.turn(computerGameboardTiles, userGameboardTiles, computerGameBoard, userGameBoard)
+            })
+            .then(() => {
+                computer.turn()
+                playGame()
+            })
+        }
+
+        return {userGameboardTiles, userGameBoard, computerGameBoard}
 
     }
+
+
+
     placeComputerShips()
     placeShip(5)
 

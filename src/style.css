@@ -40,6 +40,12 @@ main {
 .tile.selected {
     background: linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) );
 }
+.shot {
+    background-color: aqua;
+}
+.tile.selected.shot {
+    background-color: red;
+}
 footer {
     display: flex;
     align-items: center;
