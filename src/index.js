@@ -1,4 +1,4 @@
-//import "./style.css"
+import "./style.css"
 
 const ship = (lengthShip) => {
     let length = lengthShip
@@ -80,19 +80,18 @@ const Player = (type, opponentGameBoard) => {
                         arrLocation.shipID.hit()
                     }
                     if(computerPlayBoard.isWinner()) {
-                        console.log("user won")
+                        DOMController.winnerDisplay("Player")
+                        return
                     }
                     computerTurn ()
                 }
             })
         })
         let computerTurn = () => {
-            console.log("computer move")
             move = Math.floor(Math.random() * 100)
             while(userPlayBoard.gameBoardArray[move].hasHit) {
                 move = Math.floor(Math.random() * 100)
             }
-            console.log(document.querySelector(".gameBoard1").childNodes)
             let tiles = document.querySelector(".gameBoard1").childNodes
             tiles[move].classList.add("shot")
             arrLocation = userPlayBoard.gameBoardArray[move]
@@ -101,7 +100,8 @@ const Player = (type, opponentGameBoard) => {
                 arrLocation.shipID.hit()
             }
             if(userPlayBoard.isWinner()) {
-                console.log("computer wins")
+                DOMController.winnerDisplay("Computer")
+                return
             }
             
         }
@@ -111,7 +111,34 @@ const Player = (type, opponentGameBoard) => {
 }
 
 const DOMController = (() => {
+    const winnerDisplay = (winner) => {
+        let main = document.querySelector("main")
+        main.innerHTML = ""
+        let winnerDiv =  document.createElement("div")
+        winnerDiv.classList.add("winnerDiv")
+        main.appendChild(winnerDiv)
 
+        let winnerMessage = document.createElement("h1") 
+        winnerMessage.innerText = `${winner} has won! Want to play again?`
+        winnerDiv.appendChild(winnerMessage)
+
+        let playAgainButton = document.createElement("button")
+        playAgainButton.innerText = "Play Again"
+        winnerDiv.appendChild(playAgainButton)
+
+        playAgainButton.addEventListener("click", () => {
+            main.innerHTML = ""
+            for (let i = 1; i < 3; i++) {
+                let div = document.createElement("div")
+                div.classList.add("gameboard", `gameBoard${i}`)
+                main.appendChild(div)
+            }
+            gameController()
+        })
+
+    }
+
+    return {winnerDisplay}
 })()
 
 function gameController () {
@@ -162,9 +189,12 @@ function gameController () {
                 }
                 
             }
-            console.log(location)
             computerGameBoard.placeShip(location, shipLength)
-            if(!shipLength == 3 && doubleChecker == false) {
+            for (let j = location; j < (location+ shipLength); j++) {
+                computerGameboardTiles[j].classList.add("hasShip")
+            }
+            
+            if(shipLength == 3 && doubleThreeChecker == false) {
                 doubleThreeChecker = true
             } else {
                 shipLength--
@@ -172,7 +202,6 @@ function gameController () {
 
             
         }
-        console.log(computerGameBoard.gameBoardArray)
     }
     let shipsPlaced = 0
     let length = 5
@@ -180,7 +209,6 @@ function gameController () {
     function placeShip () {
         let hoveredTile;
 
-        console.log("ships: " + shipsPlaced)
         userGameboardTiles.forEach(item => {
             item.addEventListener("mouseover", (e) => {
                 userGameboardTiles.forEach(element => {
@@ -191,11 +219,11 @@ function gameController () {
                 checkValidity(hoveredTile)
             })
             item.addEventListener("click", (e) => {
-                console.log("hello")
                 let clickedTile = userGameboardTiles.indexOf(e.target)
                 if(checkValidity(clickedTile)) {
                     for(let i = clickedTile; i < (clickedTile + length); i++) {
                         userGameboardTiles[i].classList.add("selected")
+                        userGameboardTiles[i].classList.add("hasShip")
                         
                     }
                     userGameBoard.placeShip(clickedTile, length)
@@ -238,7 +266,6 @@ function gameController () {
                     valid = false
                 }
             }
-            console.log(valid)
             if (!valid) {
                 return false
             }
@@ -252,13 +279,10 @@ function gameController () {
 
         }
         const playGame = () => {
-            new Promise(function(resolve, reject){
-                user.turn(computerGameboardTiles, userGameboardTiles, computerGameBoard, userGameBoard)
+            computerGameboardTiles.forEach(element => {
+                element.classList.add("computerTile")
             })
-            .then(() => {
-                computer.turn()
-                playGame()
-            })
+            user.turn(computerGameboardTiles, userGameboardTiles, computerGameBoard, userGameBoard)
         }
 
         return {userGameboardTiles, userGameBoard, computerGameBoard}
