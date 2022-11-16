@@ -88,13 +88,13 @@ const Player = (type, opponentGameBoard) => {
             })
         })
         let computerTurn = () => {
-            move = Math.floor(Math.random() * 100)
+            let move = Math.floor(Math.random() * 100)
             while(userPlayBoard.gameBoardArray[move].hasHit) {
                 move = Math.floor(Math.random() * 100)
             }
             let tiles = document.querySelector(".gameBoard1").childNodes
             tiles[move].classList.add("shot")
-            arrLocation = userPlayBoard.gameBoardArray[move]
+            let arrLocation = userPlayBoard.gameBoardArray[move]
             arrLocation.hasHit = true
             if  (arrLocation.shipID != null) {
                 arrLocation.shipID.hit()
