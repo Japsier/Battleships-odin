@@ -22,6 +22,11 @@ main {
     justify-content: center;
     align-items: center;
 }
+.player, .opponent {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
 .gameboard {
     height: 300px;
     width: 300px;
@@ -105,4 +110,13 @@ footer {
     justify-content: center;
     padding: 20px;
 }
-
+@media (width <= 700px) {
+    main {
+        flex-direction: column;
+    }
+    .winnerDiv {
+        text-align: center;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}

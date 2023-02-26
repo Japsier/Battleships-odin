@@ -129,9 +129,29 @@ const DOMController = (() => {
         playAgainButton.addEventListener("click", () => {
             main.innerHTML = ""
             for (let i = 1; i < 3; i++) {
-                let div = document.createElement("div")
-                div.classList.add("gameboard", `gameBoard${i}`)
-                main.appendChild(div)
+                if (i === 1) {
+                    const div = document.createElement("div")
+                    div.classList.add("player")
+                    const message = document.createElement("h2")
+                    message.innerText = "Your Board"
+                    let boardDiv = document.createElement("div")
+                    boardDiv.classList.add("gameboard", `gameBoard${i}`)
+                    div.appendChild(message)
+                    div.appendChild(boardDiv)
+                    console.log(div)
+                    main.appendChild(div)
+                } else {
+                    const div = document.createElement("div")
+                    div.classList.add("opponent")
+                    const message = document.createElement("h2")
+                    message.innerText = "Opponents Board"
+                    let boardDiv = document.createElement("div")
+                    boardDiv.classList.add("gameboard", `gameBoard${i}`)
+                    div.appendChild(message)
+                    div.appendChild(boardDiv)
+                    console.log(div)
+                    main.appendChild(div)
+                }
             }
             gameController()
         })
